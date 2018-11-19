@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -38,7 +39,7 @@ public class Correntista {
 	private String nome;
 	
 	private String cpf;
-	
+
 	@OneToMany(
 			mappedBy = "correntista", 
 			targetEntity = Conta.class,
@@ -46,5 +47,4 @@ public class Correntista {
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<Conta> contas;
-
 }
