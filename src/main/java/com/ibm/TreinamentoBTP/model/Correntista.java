@@ -1,6 +1,10 @@
 package com.ibm.TreinamentoBTP.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -8,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +39,12 @@ public class Correntista {
 	
 	private String cpf;
 	
-	@OneToMany
-	private Conta conta;
+	@OneToMany(
+			mappedBy = "correntista", 
+			targetEntity = Conta.class,
+			cascade = CascadeType.ALL,
+			fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Conta> contas;
 
 }

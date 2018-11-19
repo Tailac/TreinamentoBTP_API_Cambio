@@ -55,9 +55,9 @@ public class ContaController {
     }
     
     @RequestMapping(value = "/delete/{numConta}", method = RequestMethod.DELETE)
-    public ResponseEntity<Object> deleteConta(@PathVariable Integer numConta) {
+    public ResponseEntity<Object> deleteConta(@PathVariable Long id) {
         try {
-            if(contaService.deletarConta(numConta)) {
+            if(contaService.deletarConta(id)) {
             	return ResponseEntity.ok("Contato removido com sucesso!");
             }else {
             	return ResponseEntity.ok("Contato nao encontrado!");
