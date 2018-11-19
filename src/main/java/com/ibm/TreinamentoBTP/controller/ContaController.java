@@ -80,8 +80,9 @@ public class ContaController {
     @RequestMapping(value = "/saque", method = RequestMethod.PUT)
     public ResponseEntity<Object> sacar(@RequestBody Conta conta, Double valor, Double taxaCambio) {
         try {
-            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+            return ResponseEntity.ok(contaService.sacar(conta, valor, taxaCambio));
         } catch (RuntimeException re) {
+        	System.out.println("Erro: " + re);
             return ResponseEntity.badRequest().build();
         }
     }
