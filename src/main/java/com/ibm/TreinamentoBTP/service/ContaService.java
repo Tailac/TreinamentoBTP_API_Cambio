@@ -12,7 +12,7 @@ public interface ContaService {
 	Conta atualizarConta(Conta conta);
 	boolean deletarConta(Long id);
 	Conta depositar(Conta conta, Double valor,Double taxaCambio);
-	Conta sacar(Conta conta, Double valor, Double taxaCambio);
+	Conta sacar(Conta conta, Double saldo, Double valor, Double taxaCambio);
 	List<String> listarTaxaCabmio();
 	Cambio ConsultarCambio(Double taxaCambio, Double valor);	
 }
