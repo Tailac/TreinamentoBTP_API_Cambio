@@ -88,14 +88,14 @@ public class ContaController {
             return ResponseEntity.badRequest().body(new Resposta(1,"Saldo insuficiente", null));        }
     }
     
-    @RequestMapping(value = "/taxasCambio", method = RequestMethod.GET)
-    public ResponseEntity<Object> consultarTaxasCambio() {
-        try {
-            return ResponseEntity.ok(contaService.listarTaxaCabmio());
-        } catch (RuntimeException re) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+//    @RequestMapping(value = "/taxasCambio", method = RequestMethod.GET)
+//    public ResponseEntity<Object> consultarTaxasCambio() {
+//        try {
+//            return ResponseEntity.ok(contaService.listarTaxaCabmio());
+//        } catch (RuntimeException re) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
     
     @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.PUT)
     public ResponseEntity<Object> simularCambio(@RequestBody Conta conta, Double valor, Double taxaCambio) {

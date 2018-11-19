@@ -88,10 +88,10 @@ public class ContaServiceImpl implements ContaService{
 		return conta;
 	}
 
+
 	@Override
-	public List<String> listarTaxaCabmio() {
-		
-//		List<String> = listaCambio 
+	public Cambio listarTaxaCambio() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
