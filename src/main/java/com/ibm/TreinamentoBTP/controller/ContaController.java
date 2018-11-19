@@ -36,7 +36,7 @@ public class ContaController {
          }
     }
     
-    @RequestMapping(value = "/nova",method = RequestMethod.POST)
+    @RequestMapping(value = "/novo",method = RequestMethod.POST)
     public ResponseEntity<Object> novoConta(@RequestBody Conta conta) {
         try {
             return ResponseEntity.ok(contaService.criarConta(conta));
@@ -67,5 +67,16 @@ public class ContaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
+    @RequestMapping(value = "/deposito", method = RequestMethod.PUT)
+    public ResponseEntity<Object> depositar(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+        try {
+            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+        } catch (RuntimeException re) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    
 
 }

@@ -37,6 +37,7 @@ public class CorrentistaServiceImpl implements CorrentistaService {
 
 	@Override
 	public Correntista salvarCorrentista(Correntista correntista) {
+		
 		return correntistaRepository.save(correntista);
 	}
 

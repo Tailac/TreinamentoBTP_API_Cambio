@@ -40,15 +40,12 @@ public class Conta {
 	@NotNull
 	private Integer numConta;
 	
-	private Date DataVenc;
-	
-	private Double Saldo;
+	private Double saldo;
 	
 //	private Extrato extrato;
 	
 	
     @ManyToOne(targetEntity = Correntista.class)
     private Correntista correntista;
-	
-
+    
 }
