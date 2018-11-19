@@ -66,11 +66,13 @@ public class ContaServiceImpl implements ContaService{
 	@Override
 	public Conta sacar(Conta conta, Double valor, Double taxaCambio) {
 		
+		valor *= taxaCambio;
+		System.out.println(valor);
 		if (conta == null || conta.getId() == null)
 			throw new ObjetoNaoEncontradoException("Conta nao encontrada");
 		
 		if (conta.getSaldo() < valor)
-			throw new RuntimeException("Saldo insuficiente");
+			throw new ObjetoNaoEncontradoException("Saldo insuficiente. Seu saldo e: " + conta.getSaldo());
 		
 		conta.setSaldo(conta.getSaldo() - valor);
 		contaRepository.save(conta);

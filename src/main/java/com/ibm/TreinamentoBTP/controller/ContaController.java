@@ -81,13 +81,11 @@ public class ContaController {
     }
     
     @RequestMapping(value = "/saque", method = RequestMethod.PUT)
-    public ResponseEntity<Object> sacar(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+    public ResponseEntity<Object> sacar(@RequestBody Conta conta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
         try {
             return ResponseEntity.ok(contaService.sacar(conta, valor, taxaCambio));
         } catch (RuntimeException re) {
-        	System.out.println("Erro: " + re);
-            return ResponseEntity.badRequest().build();
-        }
+            return ResponseEntity.badRequest().body(new Resposta(1,"Saldo insuficiente", null));        }
     }
     
     @RequestMapping(value = "/taxasCambio", method = RequestMethod.GET)
