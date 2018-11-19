@@ -7,7 +7,7 @@ import com.ibm.TreinamentoBTP.model.Conta;
 
 public interface ContaService {
 	
-	Conta buscarConta(Integer numConta);
+	Conta buscarConta(Long id);
 	Conta criarConta(Conta conta);
 	Conta atualizarConta(Conta conta);
 	boolean deletarConta(Long id);

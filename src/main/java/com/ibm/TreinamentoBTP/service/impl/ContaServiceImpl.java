@@ -23,10 +23,10 @@ public class ContaServiceImpl implements ContaService{
     }
 
 	@Override
-	public Conta buscarConta(Integer numConta) {
-		Optional<Conta> optionalConta = contaRepository.findBynumConta(numConta);
+	public Conta buscarConta(Long id) {
+		Optional<Conta> optionalConta = contaRepository.findById(id);
         return optionalConta.orElseThrow(() ->
-                new ObjetoNaoEncontradoException("Não foi possivel localizar a conta de id " + numConta));
+                new ObjetoNaoEncontradoException("Não foi possivel localizar a conta de id " + id));
 	}
 
 	@Override
@@ -58,8 +58,9 @@ public class ContaServiceImpl implements ContaService{
 		if(conta == null) {
 			throw new RuntimeException("Conta não encontrado");
 		}
-//		if(conta.getSaldo()
-		return null;
+		conta.setSaldo(conta.getSaldo() + (valor * taxaCambio));
+		contaRepository.save(conta);
+		return conta;
 	}
 
 	@Override
@@ -78,7 +79,8 @@ public class ContaServiceImpl implements ContaService{
 
 	@Override
 	public List<String> listarTaxaCabmio() {
-		// TODO Auto-generated method stub
+		
+//		List<String> = listaCambio 
 		return null;
 	}
 
@@ -87,7 +89,6 @@ public class ContaServiceImpl implements ContaService{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 
 

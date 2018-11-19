@@ -1,5 +1,7 @@
 package com.ibm.TreinamentoBTP.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ibm.TreinamentoBTP.model.Conta;
+import com.ibm.TreinamentoBTP.model.Correntista;
 import com.ibm.TreinamentoBTP.service.ContaService;
 import com.ibm.TreinamentoBTP.exception.*;
 
@@ -26,10 +29,10 @@ public class ContaController {
 		this.contaService = contaService;
 	}
 	
-    @RequestMapping(value = "/{numeroConta}", method = RequestMethod.GET)
-    public ResponseEntity<Object> buscaTodasContas(@PathVariable Integer numConta) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Object> buscaContas(@PathVariable Long id) {
     	 try {
-             Conta conta = contaService.buscarConta(numConta);
+             Conta conta = contaService.buscarConta(id);
              return ResponseEntity.ok(new Resposta(0, "", conta));
          } catch (ObjetoNaoEncontradoException e) {
  	        return ResponseEntity.badRequest().body(new Resposta(e.getCode(), e.getMessage(), null));
@@ -69,7 +72,7 @@ public class ContaController {
     }
     
     @RequestMapping(value = "/deposito", method = RequestMethod.PUT)
-    public ResponseEntity<Object> depositar(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+    public ResponseEntity<Object> depositar(@RequestBody Conta conta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
         try {
             return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
         } catch (RuntimeException re) {
@@ -87,10 +90,10 @@ public class ContaController {
         }
     }
     
-    @RequestMapping(value = "/taxasCambio", method = RequestMethod.PUT)
-    public ResponseEntity<Object> consultarTaxasCambio(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+    @RequestMapping(value = "/taxasCambio", method = RequestMethod.GET)
+    public ResponseEntity<Object> consultarTaxasCambio() {
         try {
-            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+            return ResponseEntity.ok(contaService.listarTaxaCabmio());
         } catch (RuntimeException re) {
             return ResponseEntity.badRequest().build();
         }
