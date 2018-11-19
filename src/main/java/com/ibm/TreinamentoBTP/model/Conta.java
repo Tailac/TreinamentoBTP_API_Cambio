@@ -45,6 +45,5 @@ public class Conta {
 	@OneToOne
 	private Correntista correntista;
 	
-	
 
 }
