@@ -25,12 +25,12 @@ public class Conta {
 	
 	@Id
 	@GeneratedValue(
-			generator="seq_correntista",
+			generator="seq_conta",
 			strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(
 			allocationSize = 1,
-			name="seq_correntista",
-			sequenceName = "seq_correnstista")
+			name="seq_conta",
+			sequenceName = "seq_conta")
 	private Long id;
 	
 	
