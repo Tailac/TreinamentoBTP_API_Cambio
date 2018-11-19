@@ -8,6 +8,7 @@ public interface CambioService {
 	final Double Taxa_BRL_USD = 0.27;
 	final Double Taxa_CNA_BRL = 2.85;
 	final Double Taxa_BRL_CNA = 0.35;
+	final Double taxa_BRL_BRL = 1.00;
 	
 	Cambio calcularCambio(Double taxaCambio, Double valorTroca);
 }

@@ -77,6 +77,32 @@ public class ContaController {
         }
     }
     
+    @RequestMapping(value = "/saque", method = RequestMethod.PUT)
+    public ResponseEntity<Object> sacar(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+        try {
+            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+        } catch (RuntimeException re) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @RequestMapping(value = "/taxasCambio", method = RequestMethod.PUT)
+    public ResponseEntity<Object> consultarTaxasCambio(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+        try {
+            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+        } catch (RuntimeException re) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.PUT)
+    public ResponseEntity<Object> simularCambio(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+        try {
+            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+        } catch (RuntimeException re) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
     
 
 }
