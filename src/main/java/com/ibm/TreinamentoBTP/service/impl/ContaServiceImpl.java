@@ -22,7 +22,7 @@ public class ContaServiceImpl implements ContaService{
         this.contaRepository = contaRepository;
     }
 
-	@Override
+	@Override 
 	public Conta buscarConta(Long id) {
 		Optional<Conta> optionalConta = contaRepository.findById(id);
         return optionalConta.orElseThrow(() ->
@@ -31,7 +31,16 @@ public class ContaServiceImpl implements ContaService{
 
 	@Override
 	public Conta criarConta(Conta conta) {
+		
+//		Optional<Conta> novaConta = contaRepository.findBynumConta(conta.getNumConta());
+//		if(novaConta == null) {
+//			return contaRepository.save(conta);
+//		}else {
+//			throw new ObjetoNaoEncontradoException("Conta já existente ");
+//		}
+		
 		return contaRepository.save(conta);
+		
 	}
 
 	@Override
@@ -82,6 +91,7 @@ public class ContaServiceImpl implements ContaService{
 		return null;
 	}
 
+	
 
 
 }

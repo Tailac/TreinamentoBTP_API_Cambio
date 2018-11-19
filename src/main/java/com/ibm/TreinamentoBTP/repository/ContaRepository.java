@@ -11,4 +11,5 @@ import com.ibm.TreinamentoBTP.model.Conta;
 public interface ContaRepository extends JpaRepository<Conta, Long>{
 	
 	Optional<Conta> findBynumConta(Integer numConta);
+	
 }
