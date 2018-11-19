@@ -33,7 +33,7 @@ public class Conta {
 	private Integer agencia;
 	
 	@NotNull
-	private Integer conta;
+	private Integer numConta;
 	
 	private Date DataVenc;
 	

@@ -1,8 +1,10 @@
 package com.ibm.TreinamentoBTP.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,18 +27,45 @@ public class ContaController {
 	}
 	
     @RequestMapping(value = "/{numeroConta}", method = RequestMethod.GET)
-    public ResponseEntity<Object> buscaTodasContas(@PathVariable Long id) {
+    public ResponseEntity<Object> buscaTodasContas(@PathVariable Integer numConta) {
     	 try {
-             Conta conta = contaService.buscarConta(id);
+             Conta conta = contaService.buscarConta(numConta);
              return ResponseEntity.ok(new Resposta(0, "", conta));
-         } catch (ObjetoNaoEcontratoException e) {
+         } catch (ObjetoNaoEncontradoException e) {
  	        return ResponseEntity.badRequest().body(new Resposta(e.getCode(), e.getMessage(), null));
          }
     }
-	
-	
-	
-	
-	
+    
+    @RequestMapping(value = "/nova",method = RequestMethod.POST)
+    public ResponseEntity<Object> novoConta(@RequestBody Conta conta) {
+        try {
+            return ResponseEntity.ok(contaService.criarConta(conta));
+        } catch (RuntimeException re) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public ResponseEntity<Object> updateConta(@RequestBody Conta conta) {
+        try {
+            return ResponseEntity.ok(contaService.atualizarConta(conta));
+        } catch (RuntimeException re) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @RequestMapping(value = "/delete/{numConta}", method = RequestMethod.DELETE)
+    public ResponseEntity<Object> deleteConta(@PathVariable Integer numConta) {
+        try {
+            if(contaService.deletarConta(numConta)) {
+            	return ResponseEntity.ok("Contato removido com sucesso!");
+            }else {
+            	return ResponseEntity.ok("Contato nao encontrado!");
+            }
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
