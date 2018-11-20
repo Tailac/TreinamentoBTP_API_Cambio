@@ -1,25 +1,29 @@
 package com.ibm.TreinamentoBTP.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ibm.TreinamentoBTP.exception.ObjetoExistenteException;
 import com.ibm.TreinamentoBTP.exception.ObjetoNaoEncontradoException;
 import com.ibm.TreinamentoBTP.model.Cambio;
 import com.ibm.TreinamentoBTP.model.Conta;
+import com.ibm.TreinamentoBTP.model.Correntista;
 import com.ibm.TreinamentoBTP.repository.ContaRepository;
+import com.ibm.TreinamentoBTP.repository.CorrentistaRepository;
 import com.ibm.TreinamentoBTP.service.ContaService;
 
 @Service
 public class ContaServiceImpl implements ContaService{
 	
 	private ContaRepository contaRepository;
+	private CorrentistaRepository correnstistaRepositoy;
 	
     @Autowired
-    public ContaServiceImpl(ContaRepository contaRepository) {
+    public ContaServiceImpl(ContaRepository contaRepository, CorrentistaRepository correnstistaRepositoy) {
         this.contaRepository = contaRepository;
+        this.correnstistaRepositoy = correnstistaRepositoy;
     }
 
 	@Override 
@@ -31,25 +35,39 @@ public class ContaServiceImpl implements ContaService{
 
 	@Override
 	public Conta criarConta(Conta conta) {
-		
-//		Optional<Conta> novaConta = contaRepository.findBynumConta(conta.getNumConta());
-//		if(novaConta == null) {
-//			return contaRepository.save(conta);
-//		}else {
-//			throw new ObjetoNaoEncontradoException("Conta já existente ");
-//		}
-		
-		return contaRepository.save(conta);
-		
+		if(conta.getCorrentista()== null)
+			throw new ObjetoExistenteException("Correntista não vinculado a conta");
+		Optional<Correntista> retCor = correnstistaRepositoy.findById(conta.getCorrentista().getId());
+		if(retCor.isPresent()) {
+			Optional<Conta> ret = contaRepository.findBynumConta(conta.getNumConta());
+			 if(ret.isPresent()) {
+				 throw new ObjetoExistenteException("Conta já existente");
+			 }else {
+				 return contaRepository.save(conta);
+			 }
+		}else {
+			throw new ObjetoExistenteException("Correntista não existente");
+		}
+
 	}
 
 	@Override
 	public Conta atualizarConta(Conta conta) {
-		if (conta == null || conta.getId() == null)
-            throw new RuntimeException("Conta não encontrado");
-        if (!contaRepository.existsById(conta.getId()))
-            throw new RuntimeException();
-        return contaRepository.save(conta);
+		if (conta == null || conta.getId()==null || conta.getNumConta() == null)
+            throw new ObjetoNaoEncontradoException("Conta não encontrado, verifique se passou o ID");
+		Optional<Conta> retNumConta = contaRepository.findBynumConta(conta.getNumConta());
+		Optional<Conta> retID = contaRepository.findById(conta.getId());
+		if(retNumConta.isPresent() & retID.isPresent()) {
+			try {
+				return contaRepository.save(conta);
+			}catch (Exception e) {
+				throw new ObjetoNaoEncontradoException("Erro ao atualziar conta, verifique informações da Conta");
+			}
+			
+		}else {
+			throw new ObjetoNaoEncontradoException("Conta não encontrada, verifique o numero da Conta e o ID");
+		}
+		
 	}
 
 	@Override
@@ -63,45 +81,55 @@ public class ContaServiceImpl implements ContaService{
 	}
 
 	@Override
-	public Conta depositar(Conta conta, Double valor, Double taxaCambio) {
-		if(conta == null) {
-			throw new RuntimeException("Conta não encontrado");
+	public Conta depositar(Integer numConta, Double valor, Double taxaCambio) {
+		if(numConta == null) {
+			throw new ObjetoNaoEncontradoException("Conta não encontrado");
 		}
-		conta.setSaldo(conta.getSaldo() + (valor * taxaCambio));
-		contaRepository.save(conta);
-		return conta;
+		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
+		if(retNumConta.isPresent()) {
+			try {
+				Optional<Conta> conta = contaRepository.findBynumConta(numConta);
+				conta.get().setSaldo(conta.get().getSaldo() + (valor * taxaCambio));
+				return contaRepository.save(conta.get());
+			}catch (Exception e) {
+				throw new ObjetoNaoEncontradoException("Erro ao realizar o Depósito, verifique informações da Conta");
+			}
+		}else {
+			throw new ObjetoNaoEncontradoException("Conta não encontrada, verifique as informacoes da conta");
+		}
+		
 	}
 
 	@Override
-	public Conta sacar(Conta conta, Double valor, Double taxaCambio) {
+	public Conta sacar(Integer numConta, Double valor, Double taxaCambio) {
 		
 		valor *= taxaCambio;
-		System.out.println(valor);
-		if (conta == null || conta.getId() == null)
+		if (numConta == null)
 			throw new ObjetoNaoEncontradoException("Conta nao encontrada");
-		
-		if (conta.getSaldo() < valor)
-			throw new ObjetoNaoEncontradoException("Saldo insuficiente. Seu saldo e: " + conta.getSaldo());
-		
-		conta.setSaldo(conta.getSaldo() - valor);
-		contaRepository.save(conta);
-		return conta;
+		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
+		if(retNumConta.isPresent()) {
+			try {
+				Optional<Conta> conta = contaRepository.findBynumConta(numConta);
+				if (conta.get().getSaldo() < valor)
+					throw new ObjetoNaoEncontradoException("Saldo insuficiente. Seu saldo e: " + conta.get().getSaldo());
+				conta.get().setSaldo(conta.get().getSaldo() - valor);
+				return contaRepository.save(conta.get());
+			}catch (Exception e) {
+				throw new ObjetoNaoEncontradoException("Erro ao realizar o Depósito, verifique informações da Conta");
+			}
+		}else {
+			throw new ObjetoNaoEncontradoException("Conta não encontrada, verifique as informacoes da conta");
+		}
 	}
 
-
-	@Override
-	public Cambio listarTaxaCambio() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Cambio ConsultarCambio(Double taxaCambio, Double valor) {
-		// TODO Auto-generated method stub
-		return null;
+		Cambio cambio =  new Cambio();
+		cambio.setTaxaCabmio(taxaCambio);
+		cambio.setValorTroca(valor);
+		cambio.setValorConvertido(valor * taxaCambio);
+		return cambio;
 	}
-
-	
-
 
 }

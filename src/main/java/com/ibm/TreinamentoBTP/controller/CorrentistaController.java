@@ -20,6 +20,7 @@ import com.ibm.TreinamentoBTP.service.CorrentistaService;
 @RequestMapping("/correntista")
 public class CorrentistaController {
 	
+	//TODO: VALIDAR CRUD
 	private CorrentistaService correntistaService;
 	
 	@Autowired

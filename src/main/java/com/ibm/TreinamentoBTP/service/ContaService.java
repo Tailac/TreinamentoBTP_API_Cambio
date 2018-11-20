@@ -11,9 +11,7 @@ public interface ContaService {
 	Conta criarConta(Conta conta);
 	Conta atualizarConta(Conta conta);
 	boolean deletarConta(Long id);
-	Conta depositar(Conta conta, Double valor,Double taxaCambio);
-	Conta sacar(Conta conta, Double valor, Double taxaCambio);
-	//TODO:FAZER TABELA PARA CAMBIO
-	Cambio listarTaxaCambio();
+	Conta depositar(Integer numConta, Double valor,Double taxaCambio);
+	Conta sacar(Integer numConta, Double valor, Double taxaCambio);
 	Cambio ConsultarCambio(Double taxaCambio, Double valor);	
 }

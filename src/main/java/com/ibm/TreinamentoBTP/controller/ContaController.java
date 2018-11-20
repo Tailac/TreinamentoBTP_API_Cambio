@@ -1,7 +1,5 @@
 package com.ibm.TreinamentoBTP.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +19,7 @@ import com.ibm.TreinamentoBTP.exception.*;
 @RequestMapping("/conta")
 public class ContaController {
 	
-	
+	//TODO: VALIDAR INCLUIR UMA CONTA COM UM CORRENTISTA QUE NAO EXISTE (VALIDAR ALL O CRUSO)
 	private ContaService contaService;
 
 	@Autowired
@@ -43,8 +41,9 @@ public class ContaController {
     public ResponseEntity<Object> novoConta(@RequestBody Conta conta) {
         try {
             return ResponseEntity.ok(contaService.criarConta(conta));
-        } catch (RuntimeException re) {
-            return ResponseEntity.badRequest().build();
+            
+        } catch (ObjetoExistenteException oe) {
+            return ResponseEntity.badRequest().body(new Resposta(oe.getCode(),oe.getMessage(), null));
         }
     }
     
@@ -52,18 +51,18 @@ public class ContaController {
     public ResponseEntity<Object> updateConta(@RequestBody Conta conta) {
         try {
             return ResponseEntity.ok(contaService.atualizarConta(conta));
-        } catch (RuntimeException re) {
-            return ResponseEntity.badRequest().build();
+        } catch (ObjetoNaoEncontradoException re) {
+            return ResponseEntity.badRequest().body(new Resposta(re.getCode(),re.getMessage(),null));
         }
     }
     
-    @RequestMapping(value = "/delete/{numConta}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> deleteConta(@PathVariable Long id) {
         try {
             if(contaService.deletarConta(id)) {
             	return ResponseEntity.ok("Contato removido com sucesso!");
             }else {
-            	return ResponseEntity.ok("Contato nao encontrado!");
+            	return ResponseEntity.badRequest().body(new Resposta(1,"Conta nao encontrada",null ));
             }
             
         } catch (Exception e) {
@@ -71,38 +70,32 @@ public class ContaController {
         }
     }
     
+    
     @RequestMapping(value = "/deposito", method = RequestMethod.PUT)
-    public ResponseEntity<Object> depositar(@RequestBody Conta conta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
+    public ResponseEntity<Object> depositar(@RequestParam(value="numConta")Integer numConta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
         try {
-            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
-        } catch (RuntimeException re) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(contaService.depositar(numConta, valor, taxaCambio));
+        } catch (ObjetoNaoEncontradoException re) {
+            return ResponseEntity.badRequest().body(new Resposta(re.getCode(), re.getMessage(),null));
         }
     }
     
     @RequestMapping(value = "/saque", method = RequestMethod.PUT)
-    public ResponseEntity<Object> sacar(@RequestBody Conta conta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
+    public ResponseEntity<Object> sacar(@RequestParam(value="numConta")Integer numConta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
         try {
-            return ResponseEntity.ok(contaService.sacar(conta, valor, taxaCambio));
+            return ResponseEntity.ok(contaService.sacar(numConta, valor, taxaCambio));
         } catch (RuntimeException re) {
             return ResponseEntity.badRequest().body(new Resposta(1,"Saldo insuficiente", null));        }
     }
     
-//    @RequestMapping(value = "/taxasCambio", method = RequestMethod.GET)
-//    public ResponseEntity<Object> consultarTaxasCambio() {
-//        try {
-//            return ResponseEntity.ok(contaService.listarTaxaCabmio());
-//        } catch (RuntimeException re) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
+
     
     @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.PUT)
-    public ResponseEntity<Object> simularCambio(@RequestBody Conta conta, Double valor, Double taxaCambio) {
+    public ResponseEntity<Object> simularCambio(@RequestParam(value="valor")Double valor, @RequestParam(value = "taxaCambio") Double taxaCambio) {
         try {
-            return ResponseEntity.ok(contaService.depositar(conta, valor, taxaCambio));
+            return ResponseEntity.ok(contaService.ConsultarCambio(taxaCambio, valor));
         } catch (RuntimeException re) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new Resposta(4, "Não foi possivel fazer a simulação",null));
         }
     }
     
