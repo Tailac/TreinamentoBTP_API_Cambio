@@ -19,7 +19,7 @@ import com.ibm.TreinamentoBTP.exception.*;
 @RequestMapping("/conta")
 public class ContaController {
 	
-	//TODO: VALIDAR INCLUIR UMA CONTA COM UM CORRENTISTA QUE NAO EXISTE (VALIDAR ALL O CRUSO)
+
 	private ContaService contaService;
 
 	@Autowired
@@ -32,7 +32,7 @@ public class ContaController {
     	 try {
              Conta conta = contaService.buscarConta(id);
              return ResponseEntity.ok(new Resposta(0, "", conta));
-         } catch (ObjetoNaoEncontradoException e) {
+         } catch (InternalException e) {
  	        return ResponseEntity.badRequest().body(new Resposta(e.getCode(), e.getMessage(), null));
          }
     }
@@ -51,7 +51,7 @@ public class ContaController {
     public ResponseEntity<Object> updateConta(@RequestBody Conta conta) {
         try {
             return ResponseEntity.ok(contaService.atualizarConta(conta));
-        } catch (ObjetoNaoEncontradoException re) {
+        } catch (InternalException re) {
             return ResponseEntity.badRequest().body(new Resposta(re.getCode(),re.getMessage(),null));
         }
     }
@@ -75,7 +75,7 @@ public class ContaController {
     public ResponseEntity<Object> depositar(@RequestParam(value="numConta")Integer numConta, @RequestParam(value = "valor") Double valor,  @RequestParam(value="taxaCambio")Double taxaCambio) {
         try {
             return ResponseEntity.ok(contaService.depositar(numConta, valor, taxaCambio));
-        } catch (ObjetoNaoEncontradoException re) {
+        } catch (InternalException re) {
             return ResponseEntity.badRequest().body(new Resposta(re.getCode(), re.getMessage(),null));
         }
     }
@@ -90,7 +90,7 @@ public class ContaController {
     
 
     
-    @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.PUT)
+    @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.GET)
     public ResponseEntity<Object> simularCambio(@RequestParam(value="valor")Double valor, @RequestParam(value = "taxaCambio") Double taxaCambio) {
         try {
             return ResponseEntity.ok(contaService.ConsultarCambio(taxaCambio, valor));

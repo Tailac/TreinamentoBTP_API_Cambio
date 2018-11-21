@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ibm.TreinamentoBTP.exception.InternalException;
 import com.ibm.TreinamentoBTP.exception.Resposta;
 import com.ibm.TreinamentoBTP.model.Correntista;
 import com.ibm.TreinamentoBTP.service.CorrentistaService;
@@ -44,8 +45,8 @@ public class CorrentistaController {
 	public ResponseEntity<Object> novoCorrentista(@RequestBody Correntista correntista) {
 		try {
 			return ResponseEntity.ok(correntistaService.salvarCorrentista(correntista));
-		} catch (RuntimeException re) {
-			return ResponseEntity.badRequest().build();
+		} catch (InternalException re) {
+			return ResponseEntity.badRequest().body(new Resposta(re.getCode(), re.getLocalizedMessage(), null));
 		}
 	}
 	
@@ -53,8 +54,8 @@ public class CorrentistaController {
 	public ResponseEntity<Object> updateCorrentista(@RequestBody Correntista correntista) {
 		try {
 			return ResponseEntity.ok(correntistaService.atualizarCorrentista(correntista));
-		} catch (RuntimeException re) {
-			return ResponseEntity.badRequest().build();
+		} catch (InternalException re) {
+			return ResponseEntity.badRequest().body(new Resposta(re.getCode(), re.getMessage(), null));
 		}
 	}
 	

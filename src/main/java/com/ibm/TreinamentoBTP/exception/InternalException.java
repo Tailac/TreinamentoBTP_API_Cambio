@@ -1,10 +1,10 @@
 package com.ibm.TreinamentoBTP.exception;
 
-public class ObjetoNaoEncontradoException extends RuntimeException{
+public class InternalException extends RuntimeException{
 	
     private Integer code = 1;
 
-    public ObjetoNaoEncontradoException(String message) {
+    public InternalException(String message) {
         super(message);
     }
 
