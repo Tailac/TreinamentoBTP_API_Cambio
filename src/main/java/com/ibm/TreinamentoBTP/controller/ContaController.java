@@ -21,7 +21,7 @@ import com.ibm.TreinamentoBTP.exception.*;
 @RequestMapping("/conta")
 public class ContaController {
 	
-
+	//TODO: VALIDAR INCLUIR UMA CONTA COM UM CORRENTISTA QUE NAO EXISTE (VALIDAR ALL O CRUSO)
 	private ContaService contaService;
 
 	@Autowired
@@ -50,7 +50,7 @@ public class ContaController {
         try {
             return ResponseEntity.ok(contaService.criarConta(conta));
             
-        } catch (ObjetoExistenteException oe) {
+        } catch (InternalException oe) {
             return ResponseEntity.badRequest().body(new Resposta(oe.getCode(),oe.getMessage(), null));
         }
     }
@@ -98,7 +98,7 @@ public class ContaController {
     
 
     
-    @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.GET)
+    @RequestMapping(value = "/simulacaoCambio", method = RequestMethod.PUT)
     public ResponseEntity<Object> simularCambio(@RequestParam(value="valor")Double valor, @RequestParam(value = "taxaCambio") Double taxaCambio) {
         try {
             return ResponseEntity.ok(contaService.ConsultarCambio(taxaCambio, valor));

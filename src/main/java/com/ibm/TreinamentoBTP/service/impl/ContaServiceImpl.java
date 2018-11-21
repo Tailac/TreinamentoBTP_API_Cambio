@@ -20,11 +20,15 @@ public class ContaServiceImpl implements ContaService{
 	
 	private ContaRepository contaRepository;
 	private CorrentistaRepository correnstistaRepositoy;
+	private CambioServiceImpl cambioServiceImpl;
+	private Cambio cambio;
 	
     @Autowired
-    public ContaServiceImpl(ContaRepository contaRepository, CorrentistaRepository correnstistaRepositoy) {
+    public ContaServiceImpl(ContaRepository contaRepository, CorrentistaRepository correnstistaRepositoy, CambioServiceImpl cambioServiceImpl, Cambio cambio) {
         this.contaRepository = contaRepository;
         this.correnstistaRepositoy = correnstistaRepositoy;
+        this.cambioServiceImpl = cambioServiceImpl;
+        this.cambio = cambio;
     }
 
 	@Override 
@@ -111,16 +115,16 @@ public class ContaServiceImpl implements ContaService{
 	@Override
 	public Conta sacar(Integer numConta, Double valor, Double taxaCambio) {
 		
-		valor *= taxaCambio;
+		cambio = cambioServiceImpl.calcularCambio(taxaCambio, valor);
 		if (numConta == null)
 			throw new InternalException("Conta nao encontrada");
 		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
 		if(retNumConta.isPresent()) {
 			try {
 				Optional<Conta> conta = contaRepository.findBynumConta(numConta);
-				if (conta.get().getSaldo() < valor)
+				if (conta.get().getSaldo() < cambio.getValorConvertido())
 					throw new InternalException("Saldo insuficiente. Seu saldo e: " + conta.get().getSaldo());
-				conta.get().setSaldo(conta.get().getSaldo() - valor);
+				conta.get().setSaldo(conta.get().getSaldo() - cambio.getValorConvertido());
 				return contaRepository.save(conta.get());
 			}catch (Exception e) {
 				throw new InternalException("Erro ao realizar o Depósito, verifique informações da Conta");

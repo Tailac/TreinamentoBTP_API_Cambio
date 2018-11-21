@@ -19,6 +19,7 @@ public class TaxaCambio {
 	private TipoMoeda tipoMoeda;
 	
 	private Double taxaConversao;
+	
 }
 //API DE CAMBIO
 //https://fixer.io/documentation
