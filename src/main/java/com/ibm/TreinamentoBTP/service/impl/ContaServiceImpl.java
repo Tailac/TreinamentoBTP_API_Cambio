@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ibm.TreinamentoBTP.exception.InternalException;
 import com.ibm.TreinamentoBTP.exception.ObjetoExistenteException;
-import com.ibm.TreinamentoBTP.exception.ObjetoNaoEncontradoException;
 import com.ibm.TreinamentoBTP.model.Cambio;
 import com.ibm.TreinamentoBTP.model.Conta;
 import com.ibm.TreinamentoBTP.model.Correntista;
@@ -31,7 +31,7 @@ public class ContaServiceImpl implements ContaService{
 	public Conta buscarConta(Long id) {
 		Optional<Conta> optionalConta = contaRepository.findById(id);
         return optionalConta.orElseThrow(() ->
-                new ObjetoNaoEncontradoException("Não foi possivel localizar a conta de id " + id));
+                new InternalException("Não foi possivel localizar a conta de id " + id));
 	}
 	
 	@Override
@@ -62,18 +62,18 @@ public class ContaServiceImpl implements ContaService{
 	@Override
 	public Conta atualizarConta(Conta conta) {
 		if (conta == null || conta.getId()==null || conta.getNumConta() == null)
-            throw new ObjetoNaoEncontradoException("Conta não encontrado, verifique se passou o ID");
+            throw new InternalException("Conta não encontrado, verifique se passou o ID");
 		Optional<Conta> retNumConta = contaRepository.findBynumConta(conta.getNumConta());
 		Optional<Conta> retID = contaRepository.findById(conta.getId());
 		if(retNumConta.isPresent() & retID.isPresent()) {
 			try {
 				return contaRepository.save(conta);
 			}catch (Exception e) {
-				throw new ObjetoNaoEncontradoException("Erro ao atualziar conta, verifique informações da Conta");
+				throw new InternalException("Erro ao atualziar conta, verifique informações da Conta");
 			}
 			
 		}else {
-			throw new ObjetoNaoEncontradoException("Conta não encontrada, verifique o numero da Conta e o ID");
+			throw new InternalException("Conta não encontrada, verifique o numero da Conta e o ID");
 		}
 		
 	}
@@ -91,7 +91,7 @@ public class ContaServiceImpl implements ContaService{
 	@Override
 	public Conta depositar(Integer numConta, Double valor, Double taxaCambio) {
 		if(numConta == null) {
-			throw new ObjetoNaoEncontradoException("Conta não encontrado");
+			throw new InternalException("Conta não encontrado");
 		}
 		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
 		if(retNumConta.isPresent()) {
@@ -100,10 +100,10 @@ public class ContaServiceImpl implements ContaService{
 				conta.get().setSaldo(conta.get().getSaldo() + (valor * taxaCambio));
 				return contaRepository.save(conta.get());
 			}catch (Exception e) {
-				throw new ObjetoNaoEncontradoException("Erro ao realizar o Depósito, verifique informações da Conta");
+				throw new InternalException("Erro ao realizar o Depósito, verifique informações da Conta");
 			}
 		}else {
-			throw new ObjetoNaoEncontradoException("Conta não encontrada, verifique as informacoes da conta");
+			throw new InternalException("Conta não encontrada, verifique as informacoes da conta");
 		}
 		
 	}
@@ -113,20 +113,20 @@ public class ContaServiceImpl implements ContaService{
 		
 		valor *= taxaCambio;
 		if (numConta == null)
-			throw new ObjetoNaoEncontradoException("Conta nao encontrada");
+			throw new InternalException("Conta nao encontrada");
 		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
 		if(retNumConta.isPresent()) {
 			try {
 				Optional<Conta> conta = contaRepository.findBynumConta(numConta);
 				if (conta.get().getSaldo() < valor)
-					throw new ObjetoNaoEncontradoException("Saldo insuficiente. Seu saldo e: " + conta.get().getSaldo());
+					throw new InternalException("Saldo insuficiente. Seu saldo e: " + conta.get().getSaldo());
 				conta.get().setSaldo(conta.get().getSaldo() - valor);
 				return contaRepository.save(conta.get());
 			}catch (Exception e) {
-				throw new ObjetoNaoEncontradoException("Erro ao realizar o Depósito, verifique informações da Conta");
+				throw new InternalException("Erro ao realizar o Depósito, verifique informações da Conta");
 			}
 		}else {
-			throw new ObjetoNaoEncontradoException("Conta não encontrada, verifique as informacoes da conta");
+			throw new InternalException("Conta não encontrada, verifique as informacoes da conta");
 		}
 	}
 
