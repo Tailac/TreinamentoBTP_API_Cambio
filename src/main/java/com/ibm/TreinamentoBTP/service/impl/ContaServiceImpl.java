@@ -37,7 +37,7 @@ public class ContaServiceImpl implements ContaService{
 	@Override
 	public List<Conta> buscarTodosConta(Integer filtro) {
 		if (filtro != null)
-			return contaRepository.findAllByNumContaContains(filtro);
+			return contaRepository.findAllByNumConta(filtro);
 		return contaRepository.findAll();
 	}
 
