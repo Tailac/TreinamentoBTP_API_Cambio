@@ -14,6 +14,8 @@ public class CambioServiceImpl implements CambioService{
 		cambio.setValorTroca(valorTroca);
 		cambio.setValorConvertido(valorConvertido);
 		return cambio;
+		
+		
 	}
 
 }
