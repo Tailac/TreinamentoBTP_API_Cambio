@@ -1,5 +1,7 @@
 package com.ibm.TreinamentoBTP.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,12 @@ public class ContaController {
          } catch (ObjetoNaoEncontradoException e) {
  	        return ResponseEntity.badRequest().body(new Resposta(e.getCode(), e.getMessage(), null));
          }
+    }
+    
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    public ResponseEntity<Object> buscarTodosConta(@RequestParam(value = "filtro", required = false) Integer filtro) {
+    	List<Conta> contas = contaService.buscarTodosConta(filtro);
+    	return ResponseEntity.ok(new Resposta(0, "", contas));
     }
     
     @RequestMapping(value = "/novo",method = RequestMethod.POST)

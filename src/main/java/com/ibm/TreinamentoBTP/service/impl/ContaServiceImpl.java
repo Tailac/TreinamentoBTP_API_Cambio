@@ -1,5 +1,6 @@
 package com.ibm.TreinamentoBTP.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,13 @@ public class ContaServiceImpl implements ContaService{
 		Optional<Conta> optionalConta = contaRepository.findById(id);
         return optionalConta.orElseThrow(() ->
                 new ObjetoNaoEncontradoException("Não foi possivel localizar a conta de id " + id));
+	}
+	
+	@Override
+	public List<Conta> buscarTodosConta(Integer filtro) {
+		if (filtro != null)
+			return contaRepository.findAllByNumContaContains(filtro);
+		return contaRepository.findAll();
 	}
 
 	@Override
