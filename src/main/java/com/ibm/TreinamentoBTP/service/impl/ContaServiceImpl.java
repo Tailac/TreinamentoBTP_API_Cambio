@@ -13,6 +13,7 @@ import com.ibm.TreinamentoBTP.model.Conta;
 import com.ibm.TreinamentoBTP.model.Correntista;
 import com.ibm.TreinamentoBTP.repository.ContaRepository;
 import com.ibm.TreinamentoBTP.repository.CorrentistaRepository;
+import com.ibm.TreinamentoBTP.service.impl.CambioServiceImpl;
 import com.ibm.TreinamentoBTP.service.ContaService;
 
 @Service
@@ -20,15 +21,13 @@ public class ContaServiceImpl implements ContaService{
 	
 	private ContaRepository contaRepository;
 	private CorrentistaRepository correnstistaRepositoy;
-	private CambioServiceImpl cambioServiceImpl;
-	private Cambio cambio;
+	private CambioServiceImpl cambioService;
 	
     @Autowired
-    public ContaServiceImpl(ContaRepository contaRepository, CorrentistaRepository correnstistaRepositoy, CambioServiceImpl cambioServiceImpl, Cambio cambio) {
+    public ContaServiceImpl(ContaRepository contaRepository, CorrentistaRepository correnstistaRepositoy, CambioServiceImpl cambioService) {
         this.contaRepository = contaRepository;
         this.correnstistaRepositoy = correnstistaRepositoy;
-        this.cambioServiceImpl = cambioServiceImpl;
-        this.cambio = cambio;
+        this.cambioService = cambioService;
     }
 
 	@Override 
@@ -51,7 +50,7 @@ public class ContaServiceImpl implements ContaService{
 			throw new ObjetoExistenteException("Correntista não vinculado a conta");
 		Optional<Correntista> retCor = correnstistaRepositoy.findById(conta.getCorrentista().getId());
 		if(retCor.isPresent()) {
-			Optional<Conta> ret = contaRepository.findBynumConta(conta.getNumConta());
+			Optional<Conta> ret = contaRepository.findByNumConta(conta.getNumConta());
 			 if(ret.isPresent()) {
 				 throw new ObjetoExistenteException("Conta já existente");
 			 }else {
@@ -67,7 +66,7 @@ public class ContaServiceImpl implements ContaService{
 	public Conta atualizarConta(Conta conta) {
 		if (conta == null || conta.getId()==null || conta.getNumConta() == null)
             throw new InternalException("Conta não encontrado, verifique se passou o ID");
-		Optional<Conta> retNumConta = contaRepository.findBynumConta(conta.getNumConta());
+		Optional<Conta> retNumConta = contaRepository.findByNumConta(conta.getNumConta());
 		Optional<Conta> retID = contaRepository.findById(conta.getId());
 		if(retNumConta.isPresent() & retID.isPresent()) {
 			try {
@@ -97,11 +96,11 @@ public class ContaServiceImpl implements ContaService{
 		if(numConta == null) {
 			throw new InternalException("Conta não encontrado");
 		}
-		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
+		Optional<Conta> retNumConta = contaRepository.findByNumConta(numConta);
 		if(retNumConta.isPresent()) {
 			try {
-				Optional<Conta> conta = contaRepository.findBynumConta(numConta);
-				conta.get().setSaldo(conta.get().getSaldo() + (valor * taxaCambio));
+				Optional<Conta> conta = contaRepository.findByNumConta(numConta);
+				conta.get().setSaldo(conta.get().getSaldo() + (cambioService.calcularCambio(taxaCambio, valor)));
 				return contaRepository.save(conta.get());
 			}catch (Exception e) {
 				throw new InternalException("Erro ao realizar o Depósito, verifique informações da Conta");
@@ -115,16 +114,17 @@ public class ContaServiceImpl implements ContaService{
 	@Override
 	public Conta sacar(Integer numConta, Double valor, Double taxaCambio) {
 		
-		cambio = cambioServiceImpl.calcularCambio(taxaCambio, valor);
+		//valor *= taxaCambio;
+		valor = cambioService.calcularCambio(taxaCambio, valor);
 		if (numConta == null)
 			throw new InternalException("Conta nao encontrada");
-		Optional<Conta> retNumConta = contaRepository.findBynumConta(numConta);
+		Optional<Conta> retNumConta = contaRepository.findByNumConta(numConta);
 		if(retNumConta.isPresent()) {
 			try {
-				Optional<Conta> conta = contaRepository.findBynumConta(numConta);
-				if (conta.get().getSaldo() < cambio.getValorConvertido())
+				Optional<Conta> conta = contaRepository.findByNumConta(numConta);
+				if (conta.get().getSaldo() < valor)
 					throw new InternalException("Saldo insuficiente. Seu saldo e: " + conta.get().getSaldo());
-				conta.get().setSaldo(conta.get().getSaldo() - cambio.getValorConvertido());
+				conta.get().setSaldo(conta.get().getSaldo() - valor);
 				return contaRepository.save(conta.get());
 			}catch (Exception e) {
 				throw new InternalException("Erro ao realizar o Depósito, verifique informações da Conta");
@@ -140,7 +140,7 @@ public class ContaServiceImpl implements ContaService{
 		Cambio cambio =  new Cambio();
 		cambio.setTaxaCabmio(taxaCambio);
 		cambio.setValorTroca(valor);
-		cambio.setValorConvertido(valor * taxaCambio);
+		cambio.setValorConvertido(cambioService.calcularCambio(taxaCambio, valor));
 		return cambio;
 	}
 
